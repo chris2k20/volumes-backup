@@ -15,9 +15,9 @@ Backup all your volumes with this container. Encrypted backup-file will be uploa
 
 Important: **Mount the right folders in the right container-path in backup- and restore-mode!**
 
-## Example: Local Folders
+## Example:
 
-### Backup-Mode - Folders
+### Backup-Mode
 
 local folders `/home/user/myfolder/` and `/opt/otherfolder/`:
 
@@ -32,7 +32,7 @@ docker run -it --rm \
 ```
 The container **returns the unique url, to get the file**
 
-### Restore-Mode - Folders
+### Restore-Mode
 
 local folders `/home/user/myfolder/` and `/opt/otherfolder/`:
 
@@ -47,38 +47,11 @@ docker run -it --rm \
   dockertransfervolume
 ```
 
-## Example: Docker Volumes
-
-### Backup-Mode - Volumes
-
-local docker volumes `myvolume1` and `secondvolume`:
+To backup **whole docker volumes**: replace the absolute path from the example above `/home/user/myfolder/` with the name of the volume `myvolume1` (Docker Like)
 
 ```bash
-docker run -it --rm \
-  -e "MODE=backup" \
-  -e "KEY=MY_S3CReT_KeY" \
-  -v "myvolume1:/volumes-src/volume1-myvolume1:ro" \
-  -v "secondvolume:/volumes-src/volume2-secondvolume:ro" \
-  --mount type=tmpfs,destination=/data \
-  dockertransfervolume
+  -v "myvolume1:/volumes-dest/volume1-myfiles" \
 ```
-The container **returns the unique url, to get the file**
-
-### Restore-Mode - Volumes
-
-local docker volumes `myvolume1` and `secondvolume`:
-
-```bash
-docker run -it --rm \
-  -e "MODE=restore" \
-  -e "DOWNLOAD_URL=https://transfer.sh/YOURURL/backup-volumes.tar.gz.enc" \
-  -e "KEY=MY_S3CReT_KeY" \
-  -v "myvolume1:/volumes-dest/volume1-myvolume1" \
-  -v "secondvolume:/volumes-dest/volume2-secondvolume" \
-  --mount type=tmpfs,destination=/data \
-  dockertransfervolume
-```
-
 ## Offline Usage
 
 NO ONLINE UPLOAD: The encrypted backup file will be saved to `/data/`, so create a volume under this path. If you set `UPLOAD_URL=` to zero, nothing gets uploaded.
