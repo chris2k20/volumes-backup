@@ -28,7 +28,7 @@ docker run -it --rm \
   -v "/home/user/myfolder/:/volumes-src/volume1-myfiles:ro" \
   -v "/opt/otherfolder/:/volumes-src/volume2-otherfolder:ro" \
   --mount type=tmpfs,destination=/data \
-  dockertransfervolume
+  user2k20/volume-backup
 ```
 The container **returns the unique url, to get the file**
 
@@ -44,7 +44,7 @@ docker run -it --rm \
   -v "/home/user/myfolder/:/volumes-dest/volume1-myfiles" \
   -v "/opt/otherfolder/:/volumes-dest/volume2-otherfolder" \
   --mount type=tmpfs,destination=/data \
-  dockertransfervolume
+  user2k20/volume-backup
 ```
 
 To backup **whole docker volumes**: replace the absolute path from the example above `/home/user/myfolder/` with the name of the volume `myvolume1` (Docker Like)
@@ -65,7 +65,7 @@ docker run -it --rm \
   -v "myvolume1:/volumes-src/volume1-myvolume1:ro" \
   -v "secondvolume:/volumes-src/volume2-secondvolume:ro" \
   -v "data:/data/" \
-  dockertransfervolume
+  user2k20/volume-backup
 
 # restore
 docker run -it --rm \
@@ -75,7 +75,7 @@ docker run -it --rm \
   -v "myvolume1:/volumes-dest/volume1-myvolume1" \
   -v "secondvolume:/volumes-dest/volume2-secondvolume" \
   -v "data:/data/" \
-  dockertransfervolume
+  user2k20/volume-backup
 ```
 
 ## Environment Variables
