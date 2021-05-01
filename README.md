@@ -2,24 +2,25 @@
 
 Purpose: **Easy but safe way to migrate/backup Volumes or Folders locally or to other Hosts**
 
-No magic: This Image creates a tar-Archive from a folder, saves it encrypted and upload it, so that only you (and you alone) can access it everywhere.
+Backup all your volumes with this universal container. The encrypted backup-file will be uploaded to [transfer.sh](https://transfer.sh/) (see Environment-Section below to customize). Overall Tool enables your container-data to be migrated to another platform (eg. from Docker to Kubernetes).
+
+No magic, very simple: This Image creates a tar-Archive from a folder, saves it encrypted and uploads it, so that only you (and you alone) can access it everywhere.
+
 Then the other way around (`MODE=restore`): download file (eg. `DOWNLOAD_URL=https://transfer.sh/U6TIL/backup-volumes.tar.gz.enc`), decrypt it and unzip it.
 
+## General Usage
 
-##  Migration
-
-Backup all your volumes with this container. Encrypted backup-file will be uploaded to [transfer.sh](https://transfer.sh/) (disable or reset with env-variable `UPLOAD_URL=""`, see Environment-Section below).
-
+- Set your personal `KEY`, so that the backup-file can be safely AES-encrypted
 - Mount your source folders into the container (ReadOnly): under `/volume-src/` (or customize `BACKUP_SRC=/volumes-src/`)
 - Mount your destination folders into the container: under `/volume-dest/` (or customize `BACKUP_DEST=/volumes-dest/`)
 
-Important: **Mount the right folders in the right container-path in backup- and restore-mode!**
+Important: **Mount the right folders in the right container-path in backup- and restore-mode!** (any name, here `volume1-myfiles` and `volume2-otherfolder`)
 
 ## Example:
 
 ### Backup-Mode
 
-local folders `/home/user/myfolder/` and `/opt/otherfolder/`:
+Part 1: the backup-mode to get a encrypted backup-file from the local folders `/home/user/myfolder/` and `/opt/otherfolder/`:
 
 ```bash
 docker run -it --rm \
@@ -30,11 +31,11 @@ docker run -it --rm \
   --mount type=tmpfs,destination=/data \
   user2k20/volume-backup
 ```
-The container **returns the unique url, to get the file**
+The container **returns the unique url to the file**
 
 ### Restore-Mode
 
-local folders `/home/user/myfolder/` and `/opt/otherfolder/`:
+Part 2: Restore backup-file to the local folders `/home/user/myfolder/` and `/opt/otherfolder/`:
 
 ```bash
 docker run -it --rm \
@@ -76,6 +77,49 @@ docker run -it --rm \
   -v "secondvolume:/volumes-dest/volume2-secondvolume" \
   -v "data:/data/" \
   user2k20/volume-backup
+```
+
+## Kubernetes Job
+
+An example manifest, which will run once as job. It will restore the backup to the volume claims (here mysql and wordpress volumes). Replace all environment variables and the volume parts:
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: volume-backup
+spec:
+  template:
+    spec:
+      containers:
+      - name: volume-backup
+        image: user2k20/volume-backup
+        env:
+          - name: MODE
+            value: restore
+          - name: KEY
+            value: MY_S3CReT_KeY
+          - name: DOWNLOAD_URL
+            value: https://transfer.sh/YOURURL/backup-volumes.tar.gz.enc
+        volumeMounts:
+          - mountPath: /data
+            name: data-volume
+          - mountPath: /volumes-dest/volume1-wordpress
+            name: wordpress-claim0
+          - mountPath: /volumes-dest/volume1-mysql
+            name: mysql-claim0
+      restartPolicy: Never
+      volumes:
+        - name: data-volume
+          emptyDir: {}
+        - name: wordpress-claim0
+          persistentVolumeClaim:
+            claimName: wordpress-claim0
+        - name: mysql-claim0
+          persistentVolumeClaim:
+            claimName: mysql-claim0
+  backoffLimit: 0
+status: {}
 ```
 
 ## Environment Variables
@@ -120,3 +164,7 @@ For the restore-mode. Sets the download url, where is the backup file is saved. 
 ## Contributions
 
 Contributions are always welcome.
+
+## No guarantee and no support
+
+If you find any mistakes or have an improvement, please leave a comment. 😋
