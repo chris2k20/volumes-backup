@@ -1,10 +1,10 @@
 # Docker-Image: volume-backup
 
-Purpose: **Easy but safe way to migrate/backup Volumes or Folders locally or to other Hosts**
+Purpose: **Migrate/Backup Docker-Volumes or Folders locally or to other Hosts (easy but safe)!**
 
-Backup all your volumes with this universal container. The encrypted backup-file will be uploaded to [transfer.sh](https://transfer.sh/) (see Environment-Section below to customize). Overall this Helper-Tool enables your container-data to be migrated to another platform (eg. from Docker to Kubernetes).
+This universal container will encrypt the backup-file and upload it to [transfer.sh](https://transfer.sh/) (see Environment-customize). Enables Migration to another platform (eg. from Docker to Kubernetes). 
 
-No magic, very simple: This Image creates a tar-Archive from a folder, saves it encrypted and uploads it, so that only you (and you alone) can access it everywhere.
+No magic, very simple: This Image creates a tar-Archive from a folder (your volumes), saves it encrypted and uploads it, so that only you (and you alone) can access it everywhere.
 
 Then the other way around (`MODE=restore`): download file (eg. `DOWNLOAD_URL=https://transfer.sh/U6TIL/backup-volumes.tar.gz.enc`), decrypt it and unzip it.
 
