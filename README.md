@@ -41,14 +41,14 @@ Part 2: Restore backup-file to the local folders `/home/user/myfolder/` and `/op
 docker run -it --rm \
   -e "MODE=restore" \
   -e "KEY=MY_S3CReT_KeY" \
-  -e "DOWNLOAD_URL=https://transfer.sh/YOURURL/backup-volumes.tar.gz.enc"
+  -e "DOWNLOAD_URL=https://transfer.sh/YOURURL/backup-volumes.tar.gz.enc" \
   -v "/home/user/myfolder/:/volumes-restore/volume1-myfiles" \
   -v "/opt/otherfolder/:/volumes-restore/volume2-otherfolder" \
   --mount type=tmpfs,destination=/data \
   user2k20/volumes-backup
 ```
 
-To backup **whole docker volumes**: replace the absolute path from the example above `/home/user/myfolder/` with the name of the volume `myvolume1` (Docker Like)
+To backup **whole docker volumes**: replace the absolute path from the example above `/home/user/myfolder/` with the name of the volume `myvolume1` (Docker Like):
 
 ```bash
   -v "myvolume1:/volumes-restore/volume1-myfiles" \
@@ -119,7 +119,6 @@ spec:
           persistentVolumeClaim:
             claimName: mysql-claim0
   backoffLimit: 0
-status: {}
 ```
 
 ## Environment Variables
