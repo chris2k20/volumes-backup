@@ -7,10 +7,10 @@ if [ "$MODE" != 'backup' ] && [ "$MODE" != 'restore' ] ; then echo -e "ERROR: Mi
 # Run Script
 if [ "$MODE" = 'backup' ]; then
     echo -e "Starting backup mode.."
-    # test BACKUP_SRC
-    if [ ! -d "${BACKUP_SRC:-/volumes-src/}" ]; then echo -e "ERROR: $BACKUP_SRC does not exist inside the container!\n Please set another BACKUP_SRC=/myfolder/ folder or mount a folder under the default $BACKUP_SRC into the container"; exit 1; fi
+    # test BACKUP_FOLDER
+    if [ ! -d "${BACKUP_FOLDER:-/volumes-backup/}" ]; then echo -e "ERROR: $BACKUP_FOLDER does not exist inside the container!\n Please set another BACKUP_FOLDER=/myfolder/ folder or mount a folder under the default $BACKUP_FOLDER into the container"; exit 1; fi
 
-    cd ${BACKUP_SRC:-/volumes-src/} && \
+    cd ${BACKUP_FOLDER:-/volumes-backup/} && \
     tar czf - . | \
       openssl enc -e ${OPENSSL_PARAM:--aes-256-cbc} \
       -out ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} \
@@ -25,8 +25,8 @@ fi
 
 if [ "$MODE" = 'restore' ]; then
     echo -e "Starting restore mode.."
-    # test BACKUP_DEST
-    if [ ! -d "${BACKUP_DEST:-/volumes-dest/}" ]; then echo -e "ERROR: $BACKUP_DEST does not exist inside the container! \n Please set another BACKUP_DEST=/myfolder/ folder or mount a folder under the default $BACKUP_DEST into the container"; exit 1; fi
+    # test RESTORE_FOLDER
+    if [ ! -d "${RESTORE_FOLDER:-/volumes-restore/}" ]; then echo -e "ERROR: $RESTORE_FOLDER does not exist inside the container! \n Please set another RESTORE_FOLDER=/myfolder/ folder or mount a folder under the default $RESTORE_FOLDER into the container"; exit 1; fi
 
     # download file
     if [ "$DOWNLOAD_URL" != '' ]; then
@@ -36,6 +36,6 @@ if [ "$MODE" = 'restore' ]; then
     openssl enc -d ${OPENSSL_PARAM:--aes-256-cbc} \
       -in ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} \
       -pass env:KEY | \
-      tar zxf - --directory ${BACKUP_DEST:-/volumes-dest/} &&
+      tar zxf - --directory ${RESTORE_FOLDER:-/volumes-restore/} &&
       echo -e "Finished extraction successfully!"
 fi

@@ -1,4 +1,4 @@
-# Docker-Image: volume-backup
+# Docker-Image: Universal volumes-backup
 
 Purpose: **Easy but safe way to migrate/backup Volumes or Folders locally or to other Hosts**
 
@@ -12,8 +12,8 @@ Then the other way around (`MODE=restore`): download file (eg. `DOWNLOAD_URL=htt
 
 - Set your personal `KEY`, so that the backup-file can be safely AES-encrypted
 - Different Folders for backup- and restore-mode to make sure the program does not overwrite the backup-data:
-  - backup-mode: Mount your source folders into the container (ReadOnly): under `/volume-src/` (or customize `BACKUP_SRC=/volumes-src/`)
-  - restore-mode: Mount your destination folders into the container: under `/volume-dest/` (or customize `BACKUP_DEST=/volumes-dest/`)
+  - backup-mode: Mount your source folders into the container (ReadOnly): under `/volumes-backup/` (or customize `BACKUP_FOLDER=/volumes-backup/`)
+  - restore-mode: Mount your destination folders into the container: under `/volumes-restore/` (or customize `RESTORE_FOLDER=/volumes-restore/`)
 
 Important: **Mount the right folders in the right container-path in backup- and restore-mode!** (any name, here `volume1-myfiles` and `volume2-otherfolder`)
 
@@ -27,10 +27,10 @@ Part 1: The backup-mode to get a encrypted backup-file from the local folders `/
 docker run -it --rm \
   -e "MODE=backup" \
   -e "KEY=MY_S3CReT_KeY" \
-  -v "/home/user/myfolder/:/volumes-src/volume1-myfiles:ro" \
-  -v "/opt/otherfolder/:/volumes-src/volume2-otherfolder:ro" \
+  -v "/home/user/myfolder/:/volumes-backup/volume1-myfiles:ro" \
+  -v "/opt/otherfolder/:/volumes-backup/volume2-otherfolder:ro" \
   --mount type=tmpfs,destination=/data \
-  user2k20/volume-backup
+  user2k20/volumes-backup
 ```
 The container **returns the unique url to the file**
 
@@ -43,16 +43,16 @@ docker run -it --rm \
   -e "MODE=restore" \
   -e "KEY=MY_S3CReT_KeY" \
   -e "DOWNLOAD_URL=https://transfer.sh/YOURURL/backup-volumes.tar.gz.enc"
-  -v "/home/user/myfolder/:/volumes-dest/volume1-myfiles" \
-  -v "/opt/otherfolder/:/volumes-dest/volume2-otherfolder" \
+  -v "/home/user/myfolder/:/volumes-restore/volume1-myfiles" \
+  -v "/opt/otherfolder/:/volumes-restore/volume2-otherfolder" \
   --mount type=tmpfs,destination=/data \
-  user2k20/volume-backup
+  user2k20/volumes-backup
 ```
 
 To backup **whole docker volumes**: replace the absolute path from the example above `/home/user/myfolder/` with the name of the volume `myvolume1` (Docker Like)
 
 ```bash
-  -v "myvolume1:/volumes-dest/volume1-myfiles" \
+  -v "myvolume1:/volumes-restore/volume1-myfiles" \
 ```
 ## Offline Usage
 
@@ -64,20 +64,20 @@ docker run -it --rm \
   -e "MODE=backup" \
   -e "UPLOAD_URL=" \
   -e "KEY=MY_S3CReT_KeY" \
-  -v "myvolume1:/volumes-src/volume1-myvolume1:ro" \
-  -v "secondvolume:/volumes-src/volume2-secondvolume:ro" \
+  -v "myvolume1:/volumes-backup/volume1-myvolume1:ro" \
+  -v "secondvolume:/volumes-backup/volume2-secondvolume:ro" \
   -v "data:/data/" \
-  user2k20/volume-backup
+  user2k20/volumes-backup
 
 # restore
 docker run -it --rm \
   -e "MODE=restore" \
   -e "DOWNLOAD_URL=" \
   -e "KEY=MY_S3CReT_KeY" \
-  -v "myvolume1:/volumes-dest/volume1-myvolume1" \
-  -v "secondvolume:/volumes-dest/volume2-secondvolume" \
+  -v "myvolume1:/volumes-restore/volume1-myvolume1" \
+  -v "secondvolume:/volumes-restore/volume2-secondvolume" \
   -v "data:/data/" \
-  user2k20/volume-backup
+  user2k20/volumes-backup
 ```
 
 ## Kubernetes Job
@@ -88,13 +88,13 @@ An example manifest, which will run once as job. It will restore the backup to t
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: volume-backup
+  name: volumes-backup
 spec:
   template:
     spec:
       containers:
-      - name: volume-backup
-        image: user2k20/volume-backup
+      - name: volumes-backup
+        image: user2k20/volumes-backup
         env:
           - name: MODE
             value: restore
@@ -105,9 +105,9 @@ spec:
         volumeMounts:
           - mountPath: /data
             name: data-volume
-          - mountPath: /volumes-dest/volume1-wordpress
+          - mountPath: /volumes-restore/volume1-wordpress
             name: wordpress-claim0
-          - mountPath: /volumes-dest/volume1-mysql
+          - mountPath: /volumes-restore/volume1-mysql
             name: mysql-claim0
       restartPolicy: Never
       volumes:
@@ -129,9 +129,9 @@ status: {}
 
 This variable is mandatory and specifies the modus `backup` or `restore`
 
-**`BACKUP_SRC`**
+**`BACKUP_FOLDER`**
 
-Sets the folder that will be backuped. Default: mount all your volumes under `/volumes-src/`
+Sets the folder that will be backuped. Default: mount all your volumes under `/volumes-backup/`
 
 **`BACKUP_FILE_NAME`**
 
@@ -142,9 +142,9 @@ The default backup name: `backup-volumes.tar.gz.enc`
 Full path and filename. Default is `/data/${BACKUP_FILE_NAME}`
 
 
-**`BACKUP_DEST`**
+**`RESTORE_FOLDER`**
 
-Where will the Backup be restored. Default is `/volumes-dest/`
+Where will the Backup be restored. Default is `/volumes-restore/`
 
 **`KEY`**
 

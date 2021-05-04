@@ -8,10 +8,10 @@ RUN apt-get update && apt-get install -y \
 
 # default environment
 ENV MODE=backup
-ENV BACKUP_SRC=/volumes-src/
+ENV BACKUP_FOLDER=/volumes-backup/
 ENV BACKUP_FILE_NAME=backup-volumes.tar.gz.enc
 ENV BACKUP_FILE=/data/${BACKUP_FILE_NAME}
-ENV BACKUP_DEST=/volumes-dest/
+ENV RESTORE_FOLDER=/volumes-restore/
 ENV KEY=""
 ENV OPENSSL_PARAM="-aes-256-cbc -pbkdf2 -iter 100000"
 ENV UPLOAD_URL="https://transfer.sh/${BACKUP_FILE_NAME}"
