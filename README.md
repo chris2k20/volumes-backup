@@ -11,8 +11,9 @@ Then the other way around (`MODE=restore`): download file (eg. `DOWNLOAD_URL=htt
 ## General Usage
 
 - Set your personal `KEY`, so that the backup-file can be safely AES-encrypted
-- Mount your source folders into the container (ReadOnly): under `/volume-src/` (or customize `BACKUP_SRC=/volumes-src/`)
-- Mount your destination folders into the container: under `/volume-dest/` (or customize `BACKUP_DEST=/volumes-dest/`)
+- Different Folders for backup- and restore-mode to make sure the program does not overwrite the backup-data:
+  - backup-mode: Mount your source folders into the container (ReadOnly): under `/volume-src/` (or customize `BACKUP_SRC=/volumes-src/`)
+  - restore-mode: Mount your destination folders into the container: under `/volume-dest/` (or customize `BACKUP_DEST=/volumes-dest/`)
 
 Important: **Mount the right folders in the right container-path in backup- and restore-mode!** (any name, here `volume1-myfiles` and `volume2-otherfolder`)
 
