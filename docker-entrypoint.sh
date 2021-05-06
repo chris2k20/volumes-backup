@@ -19,7 +19,7 @@ if [ "$MODE" = 'backup' ]; then
     # upload file
     if [ "$UPLOAD_URL" != '' ]; then
         curl --upload-file ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} ${UPLOAD_URL} &&
-          echo -e "\nFile uploaded! Please copy like above."
+          echo -e "\nFile uploaded! Please copy the link above."
     fi
 fi
 
