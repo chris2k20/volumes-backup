@@ -19,7 +19,7 @@ if [ "$MODE" = 'backup' ]; then
     # upload file
     if [ "$UPLOAD_URL" != '' ]; then
         curl --upload-file ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} ${UPLOAD_URL} &&
-          echo -e "\nFile uploaded! Please copy the link above."
+          echo -e "\nFile (with size ` du -sh ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} | awk '{print $1}' `) uploaded! Please copy the link above."
     fi
 fi
 
@@ -31,7 +31,7 @@ if [ "$MODE" = 'restore' ]; then
     # download file
     if [ "$DOWNLOAD_URL" != '' ]; then
         curl --output ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} ${DOWNLOAD_URL} &&
-          echo -e "File downloaded! Now extracting.."
+          echo -e "File (with size ` du -sh ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} | awk '{print $1}' `) downloaded! Now extracting.."
     fi
     openssl enc -d ${OPENSSL_PARAM:--aes-256-cbc} \
       -in ${BACKUP_FILE:-/data/backup-volumes.tar.gz.enc} \
