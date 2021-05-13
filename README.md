@@ -81,7 +81,7 @@ docker run -it --rm \
 
 ## Kubernetes Job
 
-An example manifest, which will run once as job. It will restore the backup to the volume claims (here mysql and wordpress volumes). Replace all environment variables and the volume parts:
+An example manifest, which will run once as Job. It will restore the backup to the volume claims (here mysql and wordpress volumes). Replace all environment variables and the volume parts:
 
 ```yaml
 apiVersion: batch/v1
@@ -102,22 +102,22 @@ spec:
           - name: DOWNLOAD_URL
             value: https://transfer.sh/YOURURL/backup-volumes.tar.gz.enc
         volumeMounts:
-          - mountPath: /data
-            name: data-volume
           - mountPath: /volumes-restore/volume1-wordpress
             name: wordpress-claim0
-          - mountPath: /volumes-restore/volume1-mysql
+          - mountPath: /volumes-restore/volume2-mysql
             name: mysql-claim0
+          - mountPath: /data
+            name: data-volume            
       restartPolicy: Never
       volumes:
-        - name: data-volume
-          emptyDir: {}
         - name: wordpress-claim0
           persistentVolumeClaim:
             claimName: wordpress-claim0
         - name: mysql-claim0
           persistentVolumeClaim:
             claimName: mysql-claim0
+        - name: data-volume
+          emptyDir: {}            
   backoffLimit: 0
 ```
 
